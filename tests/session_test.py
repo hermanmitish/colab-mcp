@@ -71,8 +71,12 @@ class TestDirectTools:
                 "open_colab_browser_connection",
                 "add_code_cell",
                 "add_text_cell",
-                "execute_cell",
+                "get_cells",
+                "run_code_cell",
                 "update_cell",
+                "delete_cell",
+                "move_cell",
+                "change_runtime",
             }
 
     @pytest.mark.asyncio
@@ -106,14 +110,14 @@ class TestAwaitToolsReady:
         mock_wss.connection_live.set()
         client.proxy_mcp_client = AsyncMock()
         mock_tool = Mock()
-        mock_tool.name = "execute_cell"
+        mock_tool.name = "run_code_cell"
         client.proxy_mcp_client.list_tools = AsyncMock(
             side_effect=[[], [mock_tool]]
         )
 
         with patch("colab_mcp.session.TOOLS_READY_POLL_INTERVAL", 0.01):
             result = await client.await_tools_ready()
-        assert result == ["execute_cell"]
+        assert result == ["run_code_cell"]
 
     @pytest.mark.asyncio
     async def test_not_connected(self, mock_wss):
@@ -179,7 +183,7 @@ class TestColabProxyMiddleware:
         mock_proxy_client.is_connected.side_effect = [False, True]
         mock_proxy_client.await_proxy_connection = AsyncMock()
         mock_proxy_client.await_tools_ready = AsyncMock(
-            return_value=["add_code_cell", "execute_cell"]
+            return_value=["add_code_cell", "run_code_cell"]
         )
         call_next = AsyncMock()
 
@@ -256,8 +260,11 @@ class TestInjectedTools:
             session.INJECTED_TOOL_NAME,
             "add_code_cell",
             "add_text_cell",
-            "execute_cell",
+            "get_cells",
+            "run_code_cell",
             "update_cell",
+            "delete_cell",
+            "move_cell",
         }
 
 

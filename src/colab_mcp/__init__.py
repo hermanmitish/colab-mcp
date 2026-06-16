@@ -114,20 +114,33 @@ async def add_text_cell(content: str = "", cellIndex: int = -1) -> str:
 
 
 @mcp.tool()
-async def execute_cell(cellId: str = "", cellIndex: int = 0) -> str:
-    """Execute a cell in the Colab notebook. Pass cellId (from add_code_cell result) or cellIndex. Requires an active browser connection via open_colab_browser_connection."""
-    args = {}
-    if cellId:
-        args["cellId"] = cellId
-    else:
-        args["cellId"] = str(cellIndex)
-    return await _forward_or_stub("run_code_cell", args)
+async def get_cells() -> str:
+    """Read the current notebook state: list of cells with their IDs, contents, and outputs. Essential for iterative work (write → run → read → adjust). Requires an active browser connection via open_colab_browser_connection."""
+    return await _forward_or_stub("get_cells", {})
+
+
+@mcp.tool()
+async def run_code_cell(cellId: str = "") -> str:
+    """Execute a code cell in the Colab notebook by cellId (from add_code_cell or get_cells). Requires an active browser connection via open_colab_browser_connection."""
+    return await _forward_or_stub("run_code_cell", {"cellId": cellId})
 
 
 @mcp.tool()
 async def update_cell(cellId: str = "", content: str = "") -> str:
     """Update the contents of an existing cell in the Colab notebook. Requires an active browser connection via open_colab_browser_connection."""
     return await _forward_or_stub("update_cell", {"cellId": cellId, "content": content})
+
+
+@mcp.tool()
+async def delete_cell(cellId: str = "") -> str:
+    """Delete a cell from the Colab notebook by cellId. Requires an active browser connection via open_colab_browser_connection."""
+    return await _forward_or_stub("delete_cell", {"cellId": cellId})
+
+
+@mcp.tool()
+async def move_cell(cellId: str = "", toIndex: int = 0) -> str:
+    """Move a cell to a new position in the Colab notebook by cellId and target index. Requires an active browser connection via open_colab_browser_connection."""
+    return await _forward_or_stub("move_cell", {"cellId": cellId, "toIndex": toIndex})
 
 
 @mcp.tool()

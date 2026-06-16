@@ -6,6 +6,30 @@ This fork follows the upstream `1.0.x` baseline and tags fork-specific work
 with the date of the change. Upstream-merged work keeps its own commit
 history.
 
+## 2026-06-16 — Pre-register full 7-tool notebook surface
+
+Closes the gap reported in [discussion #69](https://github.com/googlecolab/colab-mcp/discussions/69): the post-connection success message advertised seven notebook tools, but only four were pre-registered as stubs. `get_cells`, `delete_cell`, and `move_cell` were unreachable on clients that snapshot tools at startup (Claude Code, Codex). Without `get_cells` the bridge was effectively write-only — an agent could create cells but never read state back.
+
+### Added
+- Three new pre-registered tools matching the browser-side handler names:
+  - `get_cells()` — read current notebook state (cells, IDs, contents, outputs).
+  - `delete_cell(cellId)` — delete a cell by ID.
+  - `move_cell(cellId, toIndex)` — move a cell to a new position.
+- Matching stubs in `_make_injected_tools` (`session.py`) so all seven tools are
+  visible at startup with `NOT_CONNECTED_MSG` until the browser connects.
+
+### Changed (breaking)
+- `execute_cell` → renamed to `run_code_cell` to match the browser-side tool
+  name directly (no more wrapper). The old `execute_cell` no longer exists.
+  Callers must migrate to `run_code_cell(cellId)`. The `cellIndex` fallback
+  argument was removed — pass a `cellId` from `add_code_cell` or `get_cells`.
+
+### Caveat
+- Parameter signatures for `delete_cell` and `move_cell` are best-guess (the
+  browser-side JS handlers are not in this repo). Signatures follow the
+  established `cellId`-first pattern used by `update_cell` and `run_code_cell`.
+  Adjust in review if the real browser handlers differ.
+
 ## 2026-05-14 — Stale-server detection and cleanup
 
 Adds a process registry that solves the "Disconnected from the local Colab MCP server" issue ([upstream discussion #84](https://github.com/googlecolab/colab-mcp/discussions/84)) caused by orphaned servers from prior Claude Code sessions.
@@ -47,8 +71,9 @@ Verified end-to-end on Windows 10 with `uv run` and `uvx`:
 
 See `git log` for the full history. Highlights:
 
-- `f70c00d` — pre-register all 5 notebook tools at startup (fixes invisible
-  tools in MCP clients that don't support `notifications/tools/list_changed`).
+- `f70c00d` — pre-register notebook tools at startup (fixes invisible tools in
+  MCP clients that don't support `notifications/tools/list_changed`). Originally
+  4 stubs; expanded to 7 in the 2026-06-16 entry above.
 - `cae498b` — add `change_runtime` tool with OAuth for programmatic GPU
   assignment.
 - `e66ee69` — match real Colab API signatures (language param, cellId,

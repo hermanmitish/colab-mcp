@@ -231,10 +231,19 @@ def _make_injected_tools(
     async def add_text_cell_stub(content: str = "", cellIndex: int = -1) -> str:
         return NOT_CONNECTED_MSG
 
-    async def execute_cell_stub(cellIndex: int = 0) -> str:
+    async def get_cells_stub() -> str:
+        return NOT_CONNECTED_MSG
+
+    async def run_code_cell_stub(cellId: str = "") -> str:
         return NOT_CONNECTED_MSG
 
     async def update_cell_stub(cellId: str = "", content: str = "") -> str:
+        return NOT_CONNECTED_MSG
+
+    async def delete_cell_stub(cellId: str = "") -> str:
+        return NOT_CONNECTED_MSG
+
+    async def move_cell_stub(cellId: str = "", toIndex: int = 0) -> str:
         return NOT_CONNECTED_MSG
 
     return [
@@ -254,14 +263,29 @@ def _make_injected_tools(
             description="Add a new text/markdown cell to the Colab notebook. Requires an active browser connection via open_colab_browser_connection.",
         ),
         Tool.from_function(
-            fn=execute_cell_stub,
-            name="execute_cell",
-            description="Execute a cell in the Colab notebook. Requires an active browser connection via open_colab_browser_connection.",
+            fn=get_cells_stub,
+            name="get_cells",
+            description="Read the current notebook state: list of cells with their IDs, contents, and outputs. Essential for iterative work (write → run → read → adjust). Requires an active browser connection via open_colab_browser_connection.",
+        ),
+        Tool.from_function(
+            fn=run_code_cell_stub,
+            name="run_code_cell",
+            description="Execute a code cell in the Colab notebook by cellId. Requires an active browser connection via open_colab_browser_connection.",
         ),
         Tool.from_function(
             fn=update_cell_stub,
             name="update_cell",
             description="Update the contents of an existing cell in the Colab notebook. Requires an active browser connection via open_colab_browser_connection.",
+        ),
+        Tool.from_function(
+            fn=delete_cell_stub,
+            name="delete_cell",
+            description="Delete a cell from the Colab notebook by cellId. Requires an active browser connection via open_colab_browser_connection.",
+        ),
+        Tool.from_function(
+            fn=move_cell_stub,
+            name="move_cell",
+            description="Move a cell to a new position in the Colab notebook by cellId and target index. Requires an active browser connection via open_colab_browser_connection.",
         ),
     ]
 
