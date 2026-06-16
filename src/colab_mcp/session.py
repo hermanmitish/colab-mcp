@@ -270,7 +270,7 @@ def _make_injected_tools(
         Tool.from_function(
             fn=get_cells_stub,
             name="get_cells",
-            description="Read the current notebook state: list of cells with their IDs, contents, and outputs. Essential for iterative work (write → run → read → adjust). Requires an active browser connection via open_colab_browser_connection.",
+            description="Read the current notebook state: list of cells with their IDs, contents, and outputs. Essential for iterative work (write -> run -> read -> adjust). Requires an active browser connection via open_colab_browser_connection.",
         ),
         Tool.from_function(
             fn=run_code_cell_stub,

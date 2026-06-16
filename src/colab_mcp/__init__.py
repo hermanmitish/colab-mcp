@@ -97,16 +97,16 @@ async def open_colab_browser_connection() -> str:
         )
     return (
         f"Connection timed out. This server is on port {my_port}. Common causes:\n"
-        "  1. Stale Colab tab(s) — if Chrome reused an old tab whose URL "
+        "  1. Stale Colab tab(s) - if Chrome reused an old tab whose URL "
         "fragment points at a dead port, the tab will say 'Disconnected from "
         "the local Colab MCP server'. Close every existing colab.research.google.com "
-        "tab, then retry — `?p=<port>` in the URL is used to force Chrome to "
+        "tab, then retry - `?p=<port>` in the URL is used to force Chrome to "
         "open a fresh tab per server instance.\n"
-        "  2. Local Network Access permission denied — Chrome shows a prompt "
+        "  2. Local Network Access permission denied - Chrome shows a prompt "
         "the first time Colab tries to reach localhost. Click 'Allow'. If you "
-        "previously clicked 'Block', open colab.research.google.com → site "
-        "settings → reset the 'Insecure content' / 'Other' permission and retry.\n"
-        "  3. Browser tab was never opened — make sure your default browser "
+        "previously clicked 'Block', open colab.research.google.com -> site "
+        "settings -> reset the 'Insecure content' / 'Other' permission and retry.\n"
+        "  3. Browser tab was never opened - make sure your default browser "
         "is set and not blocking pop-ups for python.exe."
     )
 
@@ -125,7 +125,7 @@ async def add_text_cell(content: str = "", cellIndex: int = -1) -> str:
 
 @mcp.tool()
 async def get_cells() -> str:
-    """Read the current notebook state: list of cells with their IDs, contents, and outputs. Essential for iterative work (write → run → read → adjust). Requires an active browser connection via open_colab_browser_connection."""
+    """Read the current notebook state: list of cells with their IDs, contents, and outputs. Essential for iterative work (write -> run -> read -> adjust). Requires an active browser connection via open_colab_browser_connection."""
     return await _forward_or_stub("get_cells", {})
 
 
