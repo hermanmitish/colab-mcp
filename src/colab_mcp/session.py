@@ -248,7 +248,7 @@ def _make_injected_tools(
     async def delete_cell_stub(cellId: str = "") -> str:
         return NOT_CONNECTED_MSG
 
-    async def move_cell_stub(cellId: str = "", toIndex: int = 0) -> str:
+    async def move_cell_stub(cellId: str = "", cellIndex: int = 0) -> str:
         return NOT_CONNECTED_MSG
 
     return [

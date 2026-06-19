@@ -6,6 +6,41 @@ This fork follows the upstream `1.0.x` baseline and tags fork-specific work
 with the date of the change. Upstream-merged work keeps its own commit
 history.
 
+## 2026-06-19 — E2E validated against real Colab + move_cell signature correction
+
+After driving the full smoke E2E against a real Colab notebook (see
+`scripts/e2e_smoke.py --connect`), all 7 notebook tools were verified
+end-to-end with cellIds returned by the actual browser. One signature
+guess turned out to be wrong:
+
+### Fixed
+- **`move_cell` parameter renamed `toIndex` → `cellIndex`**. The browser
+  rejected `toIndex` with:
+  > Invalid arguments for move_cell: cellIndex Required (received undefined)
+  Real signature is `move_cell(cellId: str, cellIndex: int)`.
+
+### Verified against real Colab (E2E)
+- `add_code_cell` returns `{"newCellId": "<id>"}` in the result body (not
+  in structured_content). The E2E script now parses that and threads the
+  real cellId through downstream calls.
+- `get_cells` returns `{"cells": [{"cell_type": "code", "id": "<id>",
+  "source": [...]}]}`.
+- `run_code_cell(cellId)` returns `{"outputs": [{"output_type": "stream",
+  "name": "stdout", "text": ["..."]}]}` after execution.
+- `update_cell(cellId, content)`, `move_cell(cellId, cellIndex)`,
+  `delete_cell(cellId)` all return `{}` on success.
+
+### Tools added
+- `scripts/manual_browser_test.py` — starts the WebSocket server, prints
+  the Colab URL, and waits up to 5 min for any browser to connect.
+  Used to confirm that the server itself works (Edge connects on first
+  attempt) and isolate browser-specific blocks (Chrome permission cache).
+
+### Docs
+- New README troubleshooting entry for the Chrome "previously blocked"
+  permission cache — the most common cause of persistent "Disconnected"
+  on Chrome that is not solved by the dual-stack or PNA fixes.
+
 ## 2026-06-18 — Private Network Access (PNA) handshake — the REAL real fix
 
 After the dual-stack bind fix (earlier today) the Colab tab still showed

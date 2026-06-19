@@ -217,6 +217,24 @@ This fork mitigates that by appending the current port as a query param (`?p=<po
 1. Close every `colab.research.google.com` tab in your browser.
 2. Retry `open_colab_browser_connection` — it will open a fresh tab pointed at the live server.
 
+### Chrome silently blocks every connection attempt after one previous "Block"
+
+If Chrome shows "Disconnected from the local Colab MCP server" on *every* attempt — including immediately after the page loads, with no permission prompt — and the server logs only `stream ends after 0 bytes` (TCP opens then closes without any HTTP request), the most likely cause is that you previously clicked **"Block"** on the Local Network Access prompt for `colab.research.google.com`. Chrome remembers that choice **per site** and never asks again — every WebSocket attempt is silently cancelled before the handshake. Edge / Firefox / other Chromium profiles are unaffected.
+
+**Fix (Chrome):**
+1. Open `chrome://settings/content/siteDetails?site=https%3A%2F%2Fcolab.research.google.com`
+2. Find **"Access other devices on the network"** / **"Acceder a otros dispositivos en la red"** / Insecure content
+3. Change from **Block** to **Ask**
+4. Reload the Colab tab and accept the prompt when it appears.
+
+Quickest reset (clears all Colab site permissions):
+1. Open `https://colab.research.google.com`
+2. Click the **lock icon** next to the URL
+3. Click **"Reset permissions"** / **"Restablecer permisos"**
+4. Reload and try again.
+
+This was reproduced and root-caused with a manual E2E test (`scripts/manual_browser_test.py`): Edge connected on first attempt, Chrome timed out indefinitely until the per-site permission was reset.
+
 ### Chrome asks for "Permission to access other services and apps on this device" (or Colab says "Disconnected")
 
 When the Colab tab loads, Chrome shows a permission prompt:

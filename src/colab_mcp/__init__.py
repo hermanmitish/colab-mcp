@@ -148,9 +148,9 @@ async def delete_cell(cellId: str = "") -> str:
 
 
 @mcp.tool()
-async def move_cell(cellId: str = "", toIndex: int = 0) -> str:
+async def move_cell(cellId: str = "", cellIndex: int = 0) -> str:
     """Move a cell to a new position in the Colab notebook by cellId and target index. Requires an active browser connection via open_colab_browser_connection."""
-    return await _forward_or_stub("move_cell", {"cellId": cellId, "toIndex": toIndex})
+    return await _forward_or_stub("move_cell", {"cellId": cellId, "cellIndex": cellIndex})
 
 
 @mcp.tool()

@@ -103,7 +103,7 @@ async def smoke_disconnected(client: Client) -> int:
         ("run_code_cell", {"cellId": "fake"}),
         ("update_cell", {"cellId": "fake", "content": "x"}),
         ("delete_cell", {"cellId": "fake"}),
-        ("move_cell", {"cellId": "fake", "toIndex": 0}),
+        ("move_cell", {"cellId": "fake", "cellIndex": 0}),
     ]
     for name, args in test_calls:
         result = await client.call_tool(name, args)
@@ -133,21 +133,31 @@ async def smoke_connected(client: Client) -> int:
         print(_red(f"  FAIL — connection not established. Reply: {text}"))
         return failures + 1
 
+    import json
+
+    def _text(result):
+        return "\n".join(c.text for c in result.content if hasattr(c, "text"))
+
     print("\n[2/7] add_code_cell...")
     result = await client.call_tool("add_code_cell", {"code": "import sys; print(sys.version)"})
-    add_text = "\n".join(c.text for c in result.content if hasattr(c, "text"))
+    add_text = _text(result)
     print(f"    -> {add_text[:300]}")
-    # Try to extract a cellId from the result for downstream calls.
+    # The browser returns {"newCellId": "..."} as the result text (JSON).
     cell_id = None
-    structured = getattr(result, "structured_content", None) or {}
-    if isinstance(structured, dict):
-        cell_id = structured.get("cellId") or structured.get("id")
+    try:
+        parsed = json.loads(add_text)
+        cell_id = parsed.get("newCellId") or parsed.get("cellId") or parsed.get("id")
+    except (json.JSONDecodeError, ValueError):
+        pass
     if not cell_id:
-        print(_yellow("    cellId not in structured output — downstream tests will use a placeholder"))
+        print(_red("    FAIL — add_code_cell did not return a usable cellId"))
+        failures += 1
+        return failures
+    print(_green(f"    OK — got cellId={cell_id!r}"))
 
     print("\n[3/7] get_cells...")
     result = await client.call_tool("get_cells", {})
-    gc_text = "\n".join(c.text for c in result.content if hasattr(c, "text"))
+    gc_text = _text(result)
     print(f"    -> {gc_text[:300]}")
     if "Not connected" in gc_text or "Error" in gc_text:
         print(_red("    FAIL — get_cells returned error/disconnected after connect"))
@@ -155,29 +165,45 @@ async def smoke_connected(client: Client) -> int:
     else:
         print(_green("    OK — get_cells responded"))
 
-    target_id = cell_id or "0"
-    print(f"\n[4/7] run_code_cell(cellId={target_id!r})...")
-    result = await client.call_tool("run_code_cell", {"cellId": target_id})
-    rc_text = "\n".join(c.text for c in result.content if hasattr(c, "text"))
+    print(f"\n[4/7] run_code_cell(cellId={cell_id!r})...")
+    result = await client.call_tool("run_code_cell", {"cellId": cell_id})
+    rc_text = _text(result)
     print(f"    -> {rc_text[:300]}")
+    if "Error" in rc_text or "Not connected" in rc_text:
+        print(_red("    FAIL — run_code_cell returned error"))
+        failures += 1
+    else:
+        print(_green("    OK — run_code_cell executed"))
 
-    print(f"\n[5/7] update_cell(cellId={target_id!r}, content='# updated')...")
-    result = await client.call_tool("update_cell", {"cellId": target_id, "content": "# updated"})
-    print(f"    -> {('\n'.join(c.text for c in result.content if hasattr(c, 'text')))[:300]}")
+    print(f"\n[5/7] update_cell(cellId={cell_id!r}, content='# updated by E2E')...")
+    result = await client.call_tool("update_cell", {"cellId": cell_id, "content": "# updated by E2E"})
+    upd_text = _text(result)
+    print(f"    -> {upd_text[:300]}")
+    if "Error" in upd_text or "Not connected" in upd_text:
+        print(_red("    FAIL — update_cell returned error"))
+        failures += 1
+    else:
+        print(_green("    OK — update_cell succeeded"))
 
-    print(f"\n[6/7] move_cell(cellId={target_id!r}, toIndex=1) — TESTS GUESSED SIGNATURE")
-    result = await client.call_tool("move_cell", {"cellId": target_id, "toIndex": 1})
-    mc_text = "\n".join(c.text for c in result.content if hasattr(c, "text"))
+    print(f"\n[6/7] move_cell(cellId={cell_id!r}, cellIndex=1)...")
+    result = await client.call_tool("move_cell", {"cellId": cell_id, "cellIndex": 1})
+    mc_text = _text(result)
     print(f"    -> {mc_text[:300]}")
-    if "Error" in mc_text:
-        print(_yellow("    NOTE — move_cell may have wrong param names; check browser-side handler"))
+    if "Error" in mc_text or "Not connected" in mc_text:
+        print(_red("    FAIL — move_cell returned error (check signature)"))
+        failures += 1
+    else:
+        print(_green("    OK — move_cell succeeded"))
 
-    print(f"\n[7/7] delete_cell(cellId={target_id!r}) — TESTS GUESSED SIGNATURE")
-    result = await client.call_tool("delete_cell", {"cellId": target_id})
-    dc_text = "\n".join(c.text for c in result.content if hasattr(c, "text"))
+    print(f"\n[7/7] delete_cell(cellId={cell_id!r})...")
+    result = await client.call_tool("delete_cell", {"cellId": cell_id})
+    dc_text = _text(result)
     print(f"    -> {dc_text[:300]}")
-    if "Error" in dc_text:
-        print(_yellow("    NOTE — delete_cell may have wrong param names; check browser-side handler"))
+    if "Error" in dc_text or "Not connected" in dc_text:
+        print(_red("    FAIL — delete_cell returned error"))
+        failures += 1
+    else:
+        print(_green("    OK — delete_cell succeeded"))
 
     return failures
 
