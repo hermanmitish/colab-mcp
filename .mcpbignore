@@ -1,0 +1,24 @@
+# Version control / CI
+.git/
+.githooks/
+.claude/
+.github/
+.pre-commit-config.yaml
+.python-version
+
+# Dev-only assets not needed to run the server
+tests/
+scripts/
+Dockerfile
+.dockerignore
+glama.json
+CONTRIBUTING.md
+CHANGELOG.md
+
+# Build artifacts / caches
+.venv/
+**/__pycache__/
+**/*.pyc
+*.mcpb
+dist/
+build/

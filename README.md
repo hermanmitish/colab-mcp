@@ -7,6 +7,30 @@
 
 An MCP server for controlling Google Colab from any AI coding agent. This fork fixes the bugs in the [official repo](https://github.com/googlecolab/colab-mcp) that block real day-to-day use and restores features Google removed upstream.
 
+## Install for Claude (one click, no JSON)
+
+The fastest way to install — no config files to find or edit.
+
+1. **Install [uv](https://docs.astral.sh/uv/)** (the only prerequisite — it bootstraps Python and all dependencies on first launch):
+
+   ```bash
+   # macOS / Linux
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+
+   # Windows (PowerShell)
+   powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+   ```
+
+   > Do **not** use `pip install uv` — that build lacks features this server needs.
+
+2. **Download `colab-mcp.mcpb`** from the [latest release](https://github.com/hermanmitish/colab-mcp/releases/latest).
+
+3. **Install it in Claude Desktop:** open **Settings → Extensions** and drag the `.mcpb` file in (or just double-click it), then click **Install**.
+
+4. **Use it:** in any chat, ask Claude to "connect to Colab" (`open_colab_browser_connection`). A Colab tab opens in your browser and all 9 tools become available.
+
+> Using **Claude Code** or another CLI client instead? See [Quick Start](#quick-start-without-oauth) below for the `.mcp.json` setup.
+
 ## Why This Fork?
 
 Three concrete dolores that the official `googlecolab/colab-mcp` doesn't solve — and that this fork does:
