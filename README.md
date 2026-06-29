@@ -24,7 +24,7 @@ The fastest way — no config files, no runtime to set up.
 
 That's it — the bundle runs on Claude Desktop's built-in Node, so there are no prerequisites.
 
-> **Want to use a notebook you already have open** instead of the fresh `empty.ipynb` tab? In the Colab connection prompt, open the **"Connect separate tabs"** dropdown and follow the instructions there to point the connection at your existing tab.
+> **Want to use a notebook you already have open** instead of the fresh `cratchpad` tab? In the Colab connection prompt, open the **"Connect separate tabs"** dropdown and follow the instructions there to point the connection at your existing tab.
 
 > Using **Claude Code** or another CLI client? See [CLI clients](#cli-clients-claude-code-cursor-) below.
 
