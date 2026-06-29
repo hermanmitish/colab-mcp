@@ -2,9 +2,9 @@
   "manifest_version": "0.4",
   "name": "colab-mcp",
   "display_name": "Google Colab (Proxy MCP)",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Drive a Google Colab notebook from your AI client: create, edit, run, and read cells, and switch GPU runtimes.",
-  "long_description": "An MCP server that bridges your AI client (Claude Desktop, Claude Code, Cursor, etc.) to a live Google Colab notebook in your browser. All nine tools are pre-registered up front, so they appear immediately in clients that ignore `tools/list_changed` (Claude Code, Codex, Kiro). Call `open_colab_browser_connection` once to open a Colab tab and unlock the notebook editing tools. This fork also adds stale-server detection and programmatic GPU control (T4 / L4 / A100).\n\nRequires [uv](https://docs.astral.sh/uv/) to be installed (it bootstraps Python 3.13 and all dependencies automatically on first launch).",
+  "long_description": "An MCP server that bridges your AI client (Claude Desktop, Claude Code, Cursor, etc.) to a live Google Colab notebook in your browser. All nine tools are pre-registered up front, so they appear immediately in clients that ignore `tools/list_changed` (Claude Code, Codex, Kiro). Call `open_colab_browser_connection` once to open a Colab tab and unlock the notebook editing tools. This fork also adds stale-server detection and programmatic GPU control (T4 / L4 / A100).\n\nThis is a pure-TypeScript build that runs on the Node runtime bundled with Claude Desktop — no Python, no uv, nothing to install.",
   "author": {
     "name": "Herman Mitish",
     "url": "https://github.com/hermanmitish"
@@ -18,11 +18,11 @@
   "license": "Apache-2.0",
   "keywords": ["colab", "jupyter", "notebook", "google", "gpu", "mcp"],
   "server": {
-    "type": "python",
-    "entry_point": "src/colab_mcp/__init__.py",
+    "type": "node",
+    "entry_point": "dist/index.mjs",
     "mcp_config": {
-      "command": "uv",
-      "args": ["run", "--directory", "${__dirname}", "colab-mcp"]
+      "command": "node",
+      "args": ["${__dirname}/dist/index.mjs"]
     }
   },
   "tools": [

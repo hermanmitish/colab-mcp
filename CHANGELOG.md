@@ -6,6 +6,21 @@ This fork follows the upstream `1.0.x` baseline and tags fork-specific work
 with the date of the change. Upstream-merged work keeps its own commit
 history.
 
+## 2.0.0 — Full TypeScript rewrite + zero-install `.mcpb`
+
+The server was rewritten from Python to TypeScript and now ships as a single
+self-contained `.mcpb` that runs on the Node runtime bundled with Claude
+Desktop — **no Python, no `uv`, nothing to install**. One ~480 KB
+cross-platform bundle, double-click to install.
+
+- Ported every module to TS: stdio MCP server (`index.ts`), the Colab
+  WebSocket server with the Private Network Access handshake + IPv4-only bind
+  (`colabSocket.ts`), the stale-server registry (`processRegistry.ts`), the
+  runtime REST client (`colabClient.ts`), and the OAuth flow (`auth.ts`).
+- All 9 tools verified end-to-end against a live Colab tab (add → read → run).
+- The MCPB manifest switched from a `python`/`uv` server to a `node` server.
+- Removed the Python sources, `pyproject.toml`/`uv.lock`, and Python tooling.
+
 ## 2026-06-19 — E2E validated against real Colab + move_cell signature correction
 
 After driving the full smoke E2E against a real Colab notebook (see

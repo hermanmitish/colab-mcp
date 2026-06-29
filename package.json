@@ -1,0 +1,32 @@
+{
+  "name": "colab-mcp",
+  "version": "2.0.0",
+  "description": "An MCP server for Google Colab — drive a live notebook (create/edit/run/read cells) and switch GPU runtimes from any AI client. TypeScript, zero-install .mcpb.",
+  "type": "module",
+  "bin": {
+    "colab-mcp": "dist/index.mjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "node build.mjs",
+    "start": "node dist/index.mjs",
+    "dev": "npm run build && node dist/index.mjs",
+    "typecheck": "tsc --noEmit",
+    "pack:mcpb": "npm run build && npx -y @anthropic-ai/mcpb@2.1.2 pack . dist/colab-mcp.mcpb"
+  },
+  "dependencies": {
+    "@google-cloud/local-auth": "^3.0.1",
+    "@modelcontextprotocol/sdk": "^1.20.0",
+    "google-auth-library": "^10.9.0",
+    "ws": "^8.18.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/ws": "^8.5.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.6.0"
+  }
+}

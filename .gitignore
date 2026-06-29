@@ -1,4 +1,5 @@
-__pycache__/
-development-methodology/
-.claude/
+node_modules/
 dist/
+.claude/
+development-methodology/
+__pycache__/
