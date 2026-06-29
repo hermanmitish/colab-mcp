@@ -107,7 +107,7 @@ OAuth only exists so the agent can switch GPUs *for* you. If that's overkill, ju
 
 1. In the open Colab tab, click **Runtime → Change runtime type**.
 2. Under **Hardware accelerator**, choose **T4 / L4 / A100** (or **None** for CPU), then **Save**.
-3. Colab connects the new runtime. Back in your AI client, call `open_colab_browser_connection` (or reconnect) and carry on with `add_code_cell` / `run_code_cell` / `get_cells`.
+3. Colab connects the new runtime, and you can proceed with your project. 
 
 > Free Colab generally offers **T4**; L4 / A100 need a paid plan (Pro/Pro+). Verify with a quick `!nvidia-smi` in a code cell.
 
