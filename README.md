@@ -101,6 +101,18 @@ Restart your editor / reload the window. All 9 tools appear immediately. Call `o
 
 `change_runtime` lets your agent assign GPUs without you touching the browser. It needs Google OAuth credentials.
 
+### No OAuth? Change the runtime by hand (30 seconds)
+
+OAuth only exists so the agent can switch GPUs *for* you. If that's overkill, just set it yourself in the Colab UI — the notebook tools work exactly the same on whatever runtime you pick:
+
+1. In the open Colab tab, click **Runtime → Change runtime type**.
+2. Under **Hardware accelerator**, choose **T4 / L4 / A100** (or **None** for CPU), then **Save**.
+3. Colab connects the new runtime. Back in your AI client, call `open_colab_browser_connection` (or reconnect) and carry on with `add_code_cell` / `run_code_cell` / `get_cells`.
+
+> Free Colab generally offers **T4**; L4 / A100 need a paid plan (Pro/Pro+). Verify with a quick `!nvidia-smi` in a code cell.
+
+The rest of this section is only needed if you want the agent to flip runtimes via the `change_runtime` tool.
+
 ### 1. Create OAuth credentials (one-time, ~5 min)
 
 1. **Create / pick a GCP project:**
