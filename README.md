@@ -24,6 +24,8 @@ The fastest way — no config files, no runtime to set up.
 
 That's it — the bundle runs on Claude Desktop's built-in Node, so there are no prerequisites.
 
+> **Want to use a notebook you already have open** instead of the fresh `empty.ipynb` tab? In the Colab connection prompt, open the **"Connect separate tabs"** dropdown and follow the instructions there to point the connection at your existing tab.
+
 > Using **Claude Code** or another CLI client? See [CLI clients](#cli-clients-claude-code-cursor-) below.
 
 ## Why this fork?
@@ -113,7 +115,9 @@ Restart your editor / reload the window. All 9 tools appear immediately. Call `o
 
 ### 2. Pass the credentials to the server
 
-Add the flag to your `.mcp.json` args:
+**Claude Desktop (`.mcpb`):** open **Settings → Extensions → Colab MCP**, and in the extension's settings set **"OAuth client-secrets JSON"** to the file you downloaded. That's it — restart the extension and `change_runtime` is enabled. (Leave it empty and only the notebook tools are active.)
+
+**CLI clients (`.mcp.json`):** add the flag to your args:
 
 ```json
 {
@@ -172,8 +176,10 @@ node /path/to/colab-mcp/dist/index.mjs --kill-stale
 - Define the server in only **one** `.mcp.json` (not both global and project — dual definitions spawn two instances and one dies silently).
 - Restart your editor after changing `.mcp.json`.
 
-### `change_runtime` returns "Runtime API not initialized"
-- Make sure `--client-oauth-config` is in your args and the JSON path exists.
+### `change_runtime` returns "Runtime API not initialized" / "not enabled on this server"
+This is expected until you provide OAuth credentials — the notebook tools work without them.
+- **Claude Desktop:** Settings → Extensions → Colab MCP → set the **OAuth client-secrets JSON** file, then restart the extension.
+- **CLI:** make sure `--client-oauth-config` is in your args and the JSON path exists.
 - Check the server's stderr (Claude Desktop logs). A healthy start logs `Colab runtime API client ready`; a failure logs `failed to initialize Colab API client: …`.
 
 ### OAuth says "Access denied"

@@ -22,7 +22,18 @@
     "entry_point": "dist/index.mjs",
     "mcp_config": {
       "command": "node",
-      "args": ["${__dirname}/dist/index.mjs"]
+      "args": ["${__dirname}/dist/index.mjs"],
+      "env": {
+        "COLAB_OAUTH_CONFIG": "${user_config.oauth_config}"
+      }
+    }
+  },
+  "user_config": {
+    "oauth_config": {
+      "type": "file",
+      "title": "OAuth client-secrets JSON (optional)",
+      "description": "Path to your Google OAuth client-secrets JSON (Desktop app type). Only needed to enable the change_runtime tool for programmatic GPU control. Leave empty to use just the notebook tools. See the README for the 5-minute setup.",
+      "required": false
     }
   },
   "tools": [

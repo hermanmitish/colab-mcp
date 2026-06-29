@@ -262,9 +262,14 @@ try {
 }
 
 // Optional: initialize the Colab runtime API client (enables change_runtime).
-if (cli.clientOAuthConfig) {
+// The OAuth client-secrets path can come from the --client-oauth-config flag
+// (CLI / .mcp.json) or the COLAB_OAUTH_CONFIG env var (set by the .mcpb's
+// user_config file picker). An empty/unset value just leaves change_runtime
+// disabled — it never blocks startup.
+const oauthConfig = cli.clientOAuthConfig || process.env.COLAB_OAUTH_CONFIG;
+if (oauthConfig) {
   try {
-    const auth = await getColabAuthClient(cli.clientOAuthConfig);
+    const auth = await getColabAuthClient(oauthConfig);
     colabClient = new ColabClient(auth);
     log('Colab runtime API client ready');
   } catch (err) {
